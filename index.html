@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sorteio de Presentes - Anabela</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="background-decor">
+    <span class="bubble bubble-1"></span>
+    <span class="bubble bubble-2"></span>
+    <span class="bubble bubble-3"></span>
+    <span class="bubble bubble-4"></span>
+    <span class="star star-1">★</span>
+    <span class="star star-2">★</span>
+    <span class="star star-3">★</span>
+    <span class="heart heart-1">❤</span>
+    <span class="heart heart-2">❤</span>
+  </div>
+
+  <main class="container">
+    <section class="hero-card">
+      <p class="eyebrow">🎉 Sorteio de presentes 🎉</p>
+      <h1>Aniversário da Anabela</h1>
+      <p class="subtitle">
+        Clique no botão e descubra qual presente será sorteado para a Anabela!
+      </p>
+
+      <div class="wheel-section">
+        <div class="pointer"></div>
+        <div class="wheel-wrapper">
+          <canvas id="wheelCanvas" width="520" height="520"></canvas>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="spinBtn">Iniciar sorteio</button>
+      </div>
+
+      <div class="result-card" id="resultCard">
+        <p class="result-label">Presente sorteado:</p>
+        <h2 id="resultText">Clique em “Iniciar sorteio”</h2>
+      </div>
+    </section>
+
+    <section class="gift-list-card">
+      <h3>🎁 Lista de presentes</h3>
+      <ul id="giftList"></ul>
+    </section>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
