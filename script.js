@@ -12,8 +12,13 @@ const gifts = [
 const wheelCanvas = document.getElementById("wheelCanvas");
 const ctx = wheelCanvas.getContext("2d");
 const spinBtn = document.getElementById("spinBtn");
-const resultText = document.getElementById("resultText");
-const resultCard = document.getElementById("resultCard");
+const drawnList = document.getElementById("drawnList");
+const drawnEmpty = document.getElementById("drawnEmpty");
+const spinsInfo = document.getElementById("spinsInfo");
+
+const MAX_SPINS = 3;
+let spinsUsed = 0;
+let drawnGifts = [];
 
 /* ── Confetti setup ── */
 const confettiCanvas = document.getElementById("confettiCanvas");
@@ -201,24 +206,25 @@ function animateConfetti() {
   }
 }
 
+function getSegmentAtPointer(rotation) {
+  // O ponteiro está no topo da roleta = ângulo 3π/2 em coordenadas canvas
+  // ctx.rotate(rotation) faz o segmento i aparecer na tela no ângulo: rotation + i*arc até rotation + (i+1)*arc
+  // Para saber qual segmento está no topo: α = (3π/2 - rotation) mod 2π → index = floor(α / arc)
+  const arc = (Math.PI * 2) / gifts.length;
+  const angle = normalizeAngle((Math.PI * 3 / 2) - rotation);
+  return Math.floor(angle / arc);
+}
+
 function spinWheel() {
-  if (isSpinning) return;
+  if (isSpinning || spinsUsed >= MAX_SPINS) return;
 
   isSpinning = true;
   spinBtn.disabled = true;
-  resultCard.classList.remove("visible");
-  resultCard.classList.add("hidden");
-  resultText.textContent = "";
-  
-  const selectedIndex = Math.floor(Math.random() * gifts.length);
-  const segmentAngle = (Math.PI * 2) / gifts.length;
 
-  // Queremos que o centro do segmento sorteado pare no topo (ponteiro = 12h = 3π/2)
-  const targetAngle =
-    (Math.PI * 3 / 2) - (selectedIndex * segmentAngle + segmentAngle / 2);
-
-  const extraSpins = Math.PI * 2 * (5 + Math.random() * 2);
-  const finalRotation = currentRotation + extraSpins + normalizeAngle(targetAngle - (currentRotation % (Math.PI * 2)));
+  // Gira aleatoriamente (5-7 voltas completas + posição aleatória)
+  const extraSpins = Math.PI * 2 * (5 + Math.random() * 3);
+  const randomOffset = Math.random() * Math.PI * 2;
+  const finalRotation = currentRotation + extraSpins + randomOffset;
 
   const duration = 5000;
   const startTime = performance.now();
@@ -238,17 +244,57 @@ function spinWheel() {
       currentRotation = finalRotation % (Math.PI * 2);
       drawWheel(currentRotation);
 
-      resultText.textContent = gifts[selectedIndex];
-      resultCard.classList.remove("hidden");
-      resultCard.classList.add("visible");
+      // Detecta qual segmento parou sob o ponteiro
+      const selectedIndex = getSegmentAtPointer(currentRotation);
+
+      spinsUsed++;
+      const gift = gifts[selectedIndex];
+      drawnGifts.push(gift);
+      addDrawnGift(gift, spinsUsed);
       launchConfetti();
 
+      const remaining = MAX_SPINS - spinsUsed;
+      if (remaining > 0) {
+        spinBtn.textContent = `Girar roleta (${remaining} restante${remaining > 1 ? 's' : ''})`;
+        spinBtn.disabled = false;
+        spinsInfo.textContent = `Sorteio ${spinsUsed} de ${MAX_SPINS} realizado!`;
+      } else {
+        spinBtn.textContent = "Sorteios encerrados!";
+        spinBtn.disabled = true;
+        spinsInfo.textContent = `Todos os ${MAX_SPINS} sorteios foram realizados!`;
+        showDoneMessage();
+      }
+
       isSpinning = false;
-      spinBtn.disabled = false;
     }
   }
 
   requestAnimationFrame(animate);
+}
+
+function addDrawnGift(gift, number) {
+  drawnEmpty.style.display = "none";
+
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <span class="drawn-number">${number}º</span>
+    <div class="drawn-info">
+      <span class="drawn-tag">${number}º sorteio</span>
+      <span class="drawn-name">${gift}</span>
+    </div>
+  `;
+  drawnList.appendChild(li);
+}
+
+function showDoneMessage() {
+  const panel = document.querySelector(".drawn-panel");
+  const div = document.createElement("div");
+  div.className = "done-message";
+  div.innerHTML = `
+    <span class="done-emoji">🎉</span>
+    <p>Parabéns Ana Bella!<br>Esses são seus presentes!</p>
+  `;
+  panel.appendChild(div);
 }
 
 function normalizeAngle(angle) {

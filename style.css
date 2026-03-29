@@ -101,18 +101,18 @@ body {
 .container {
   position: relative;
   z-index: 1;
-  width: min(700px, 92%);
+  width: min(1200px, 94%);
   margin: 0 auto;
   padding: 40px 0 60px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 380px;
   gap: 32px;
+  align-items: start;
 }
 
 /* ── Cards base ── */
-.hero-card {
-  width: 100%;
+.hero-card,
+.drawn-panel {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -122,7 +122,8 @@ body {
   transition: box-shadow 0.3s ease;
 }
 
-.hero-card:hover {
+.hero-card:hover,
+.drawn-panel:hover {
   box-shadow: var(--shadow-lg);
 }
 
@@ -292,57 +293,121 @@ button#spinBtn:disabled {
   box-shadow: 0 8px 20px rgba(155, 107, 255, 0.15);
 }
 
-/* ── Result card ── */
-.result-card {
-  background: linear-gradient(135deg, #fff9e6, #fff0f7, #f3edff);
-  border: 3px dashed rgba(255, 111, 181, 0.45);
-  border-radius: var(--radius-lg);
-  padding: 36px 32px;
-  min-height: 160px;
+/* ── Drawn gifts panel ── */
+.drawn-panel {
+  padding: 32px 24px;
+  position: sticky;
+  top: 30px;
+}
+
+.drawn-panel h3 {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--purple-dark);
+  margin-bottom: 20px;
+}
+
+.drawn-empty {
+  text-align: center;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  padding: 30px 10px;
+  opacity: 0.7;
+}
+
+.drawn-list {
+  list-style: none;
   display: flex;
   flex-direction: column;
+  gap: 14px;
+}
+
+.drawn-list li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(255, 111, 181, 0.08), rgba(155, 107, 255, 0.1));
+  border: 1.5px solid rgba(155, 107, 255, 0.15);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  animation: slideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.drawn-list li .drawn-number {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.result-card.hidden {
-  opacity: 0;
-  transform: translateY(10px) scale(0.95);
-}
-
-.result-card.visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  animation: resultPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.result-icon {
-  font-size: 3.5rem;
-  animation: bounce 1s ease-in-out infinite;
-}
-
-.result-label {
+  min-width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  color: white;
   font-size: 0.9rem;
-  font-weight: 700;
-  color: #b8860b;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(155, 107, 255, 0.25);
 }
 
-#resultText {
-  text-align: center;
-  font-size: clamp(1.4rem, 4vw, 2.2rem);
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--purple-dark), var(--pink-dark));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.drawn-list li .drawn-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.drawn-list li .drawn-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
   line-height: 1.3;
 }
 
+.drawn-list li .drawn-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--pink-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
+.drawn-list li:last-child {
+  background: linear-gradient(135deg, rgba(255, 217, 92, 0.18), rgba(255, 111, 181, 0.12));
+  border-color: rgba(255, 217, 92, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 217, 92, 0.15);
+}
+
+#spinsInfo {
+  color: var(--pink-dark);
+  font-size: 0.92rem;
+}
+
+.done-message {
+  text-align: center;
+  padding: 20px;
+  margin-top: 12px;
+  background: linear-gradient(135deg, #fff9e6, #fff0f7);
+  border-radius: var(--radius-md);
+  border: 2px dashed rgba(255, 111, 181, 0.3);
+}
+
+.done-message p {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--purple-dark);
+  line-height: 1.5;
+}
+
+.done-message .done-emoji {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+@keyframes slideIn {
+  0% { opacity: 0; transform: translateX(30px) scale(0.9); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
 
 /* ── Animations ── */
 @keyframes floatBubble {
@@ -378,6 +443,17 @@ button#spinBtn:disabled {
 
 /* ── Responsive: Tablet ── */
 @media (max-width: 960px) {
+  .container {
+    grid-template-columns: 1fr;
+    max-width: 640px;
+  }
+
+  .hero-card { order: 1; }
+  .drawn-panel {
+    order: 2;
+    position: static;
+  }
+
   .wheel-wrapper {
     width: min(72vw, 440px);
   }
@@ -460,17 +536,26 @@ button#spinBtn:disabled {
     font-size: 1.05rem;
   }
 
-  .result-card {
+  .drawn-panel {
     padding: 22px 16px;
-    min-height: 110px;
   }
 
-  .result-icon {
-    font-size: 2rem;
+  .drawn-panel h3 {
+    font-size: 1.2rem;
   }
 
-  #resultText {
-    font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+  .drawn-list li {
+    padding: 14px 16px;
+  }
+
+  .drawn-list li .drawn-number {
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.82rem;
+  }
+
+  .drawn-list li .drawn-name {
+    font-size: 0.92rem;
   }
 
   .bubble { opacity: 0.1; }

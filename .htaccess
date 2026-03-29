@@ -1,0 +1,17 @@
+# Arquivo de configuração para Apache
+DirectoryIndex index.html
+
+# Redirecionar para index.html se não encontrar o arquivo
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # Se for um diretório, adiciona index.html
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^(.*)$ $1/index.html [L]
+    
+    # Se o arquivo não existir e não for um diretório
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.html [L]
+</IfModule>

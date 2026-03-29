@@ -32,7 +32,8 @@
       <p class="eyebrow">🎉 Sorteio de presentes 🎉</p>
       <h1>Aniversário da Ana Bella</h1>
       <p class="subtitle">
-        Clique no botão e descubra qual presente será sorteado para a Ana Bella!
+        Clique no botão e descubra qual presente será sorteado para a Ana Bella!<br>
+        <strong id="spinsInfo">Você tem 3 sorteios disponíveis.</strong>
       </p>
 
       <div class="wheel-section">
@@ -43,14 +44,14 @@
       </div>
 
       <div class="actions">
-        <button id="spinBtn">Iniciar sorteio</button>
+        <button id="spinBtn">Girar roleta (3 restantes)</button>
       </div>
+    </section>
 
-      <div class="result-card hidden" id="resultCard">
-        <div class="result-icon">🎁</div>
-        <p class="result-label">Presente sorteado:</p>
-        <h2 id="resultText"></h2>
-      </div>
+    <section class="drawn-panel">
+      <h3>🎁 Presentes sorteados</h3>
+      <p class="drawn-empty" id="drawnEmpty">Nenhum presente sorteado ainda.<br>Gire a roleta!</p>
+      <ul class="drawn-list" id="drawnList"></ul>
     </section>
   </main>
 
