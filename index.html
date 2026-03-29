@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sorteio de Presentes - Anabela</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Pacifico&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -12,19 +15,24 @@
     <span class="bubble bubble-2"></span>
     <span class="bubble bubble-3"></span>
     <span class="bubble bubble-4"></span>
-    <span class="star star-1">★</span>
-    <span class="star star-2">★</span>
-    <span class="star star-3">★</span>
-    <span class="heart heart-1">❤</span>
-    <span class="heart heart-2">❤</span>
+    <span class="bubble bubble-5"></span>
+    <span class="star star-1">&#10022;</span>
+    <span class="star star-2">&#10022;</span>
+    <span class="star star-3">&#10022;</span>
+    <span class="star star-4">&#10022;</span>
+    <span class="heart heart-1">&#10084;</span>
+    <span class="heart heart-2">&#10084;</span>
+    <span class="heart heart-3">&#10084;</span>
   </div>
+
+  <canvas id="confettiCanvas"></canvas>
 
   <main class="container">
     <section class="hero-card">
       <p class="eyebrow">🎉 Sorteio de presentes 🎉</p>
-      <h1>Aniversário da Anabela</h1>
+      <h1>Aniversário da Ana Bella</h1>
       <p class="subtitle">
-        Clique no botão e descubra qual presente será sorteado para a Anabela!
+        Clique no botão e descubra qual presente será sorteado para a Ana Bella!
       </p>
 
       <div class="wheel-section">
@@ -38,15 +46,11 @@
         <button id="spinBtn">Iniciar sorteio</button>
       </div>
 
-      <div class="result-card" id="resultCard">
+      <div class="result-card hidden" id="resultCard">
+        <div class="result-icon">🎁</div>
         <p class="result-label">Presente sorteado:</p>
-        <h2 id="resultText">Clique em “Iniciar sorteio”</h2>
+        <h2 id="resultText"></h2>
       </div>
-    </section>
-
-    <section class="gift-list-card">
-      <h3>🎁 Lista de presentes</h3>
-      <ul id="giftList"></ul>
     </section>
   </main>
 

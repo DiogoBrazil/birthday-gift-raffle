@@ -13,7 +13,20 @@ const wheelCanvas = document.getElementById("wheelCanvas");
 const ctx = wheelCanvas.getContext("2d");
 const spinBtn = document.getElementById("spinBtn");
 const resultText = document.getElementById("resultText");
-const giftList = document.getElementById("giftList");
+const resultCard = document.getElementById("resultCard");
+
+/* ── Confetti setup ── */
+const confettiCanvas = document.getElementById("confettiCanvas");
+const confettiCtx = confettiCanvas.getContext("2d");
+let confettiPieces = [];
+let confettiAnimating = false;
+
+function resizeConfettiCanvas() {
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeConfettiCanvas);
+resizeConfettiCanvas();
 
 const colors = [
   "#ff8cc8",
@@ -30,15 +43,6 @@ const colors = [
 
 let currentRotation = 0;
 let isSpinning = false;
-
-function renderGiftList() {
-  giftList.innerHTML = "";
-  gifts.forEach((gift, index) => {
-    const li = document.createElement("li");
-    li.innerHTML = `<span>${index + 1}</span>${gift}`;
-    giftList.appendChild(li);
-  });
-}
 
 function drawWheel(rotation = 0) {
   const size = wheelCanvas.width;
@@ -72,29 +76,32 @@ function drawWheel(rotation = 0) {
     ctx.rotate(startAngle + arc / 2);
 
     ctx.textAlign = "right";
-    ctx.fillStyle = "#5a3b68";
-    ctx.font = "bold 20px Arial";
+    ctx.fillStyle = "#3d1f52";
+    ctx.font = "bold 17px Poppins, Arial, sans-serif";
 
     const label = gifts[i];
-    const maxWidth = radius * 0.62;
+    const maxWidth = radius * 0.58;
 
-    wrapText(ctx, label, radius - 24, 0, maxWidth, 22);
+    wrapText(ctx, label, radius - 28, 0, maxWidth, 19);
 
     ctx.restore();
   }
 
   // círculo central
   ctx.beginPath();
-  ctx.arc(0, 0, 42, 0, Math.PI * 2);
+  ctx.arc(0, 0, 44, 0, Math.PI * 2);
   ctx.fillStyle = "#ffffff";
   ctx.fill();
-  ctx.lineWidth = 8;
+  ctx.lineWidth = 6;
   ctx.strokeStyle = "#ff6fb5";
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.arc(0, 0, 18, 0, Math.PI * 2);
-  ctx.fillStyle = "#ffd95c";
+  ctx.arc(0, 0, 22, 0, Math.PI * 2);
+  const centerGrad = ctx.createRadialGradient(0, 0, 4, 0, 0, 22);
+  centerGrad.addColorStop(0, "#ffe066");
+  centerGrad.addColorStop(1, "#ffb84d");
+  ctx.fillStyle = centerGrad;
   ctx.fill();
 
   ctx.restore();
@@ -131,19 +138,84 @@ function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
 }
 
+/* ── Confetti explosion ── */
+function launchConfetti() {
+  const confettiColors = [
+    "#ff6fb5", "#9b6bff", "#ffd95c", "#8fd9ff",
+    "#9ff7d1", "#ffb17a", "#ff9e9e", "#e0b3ff"
+  ];
+
+  confettiPieces = [];
+  for (let i = 0; i < 150; i++) {
+    confettiPieces.push({
+      x: confettiCanvas.width / 2 + (Math.random() - 0.5) * 200,
+      y: confettiCanvas.height / 2,
+      vx: (Math.random() - 0.5) * 16,
+      vy: (Math.random() - 1) * 18 - 4,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 3,
+      color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+      rotation: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.3,
+      gravity: 0.12 + Math.random() * 0.08,
+      opacity: 1,
+      decay: 0.003 + Math.random() * 0.004
+    });
+  }
+
+  if (!confettiAnimating) {
+    confettiAnimating = true;
+    animateConfetti();
+  }
+}
+
+function animateConfetti() {
+  confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+  let alive = false;
+  for (const p of confettiPieces) {
+    if (p.opacity <= 0) continue;
+    alive = true;
+
+    p.x += p.vx;
+    p.vy += p.gravity;
+    p.y += p.vy;
+    p.vx *= 0.99;
+    p.rotation += p.rotSpeed;
+    p.opacity -= p.decay;
+
+    confettiCtx.save();
+    confettiCtx.translate(p.x, p.y);
+    confettiCtx.rotate(p.rotation);
+    confettiCtx.globalAlpha = Math.max(0, p.opacity);
+    confettiCtx.fillStyle = p.color;
+    confettiCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    confettiCtx.restore();
+  }
+
+  if (alive) {
+    requestAnimationFrame(animateConfetti);
+  } else {
+    confettiAnimating = false;
+    confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+  }
+}
+
 function spinWheel() {
   if (isSpinning) return;
 
   isSpinning = true;
   spinBtn.disabled = true;
-  resultText.textContent = "Girando...";
+  resultCard.classList.remove("visible");
+  resultCard.classList.add("hidden");
+  resultText.textContent = "";
   
   const selectedIndex = Math.floor(Math.random() * gifts.length);
   const segmentAngle = (Math.PI * 2) / gifts.length;
 
-  // Queremos que o centro do segmento sorteado pare no topo (ponteiro)
+  // Queremos que o centro do segmento sorteado pare no topo (ponteiro = 12h = 3π/2)
   const targetAngle =
-    (Math.PI * 2) - (selectedIndex * segmentAngle + segmentAngle / 2);
+    (Math.PI * 3 / 2) - (selectedIndex * segmentAngle + segmentAngle / 2);
 
   const extraSpins = Math.PI * 2 * (5 + Math.random() * 2);
   const finalRotation = currentRotation + extraSpins + normalizeAngle(targetAngle - (currentRotation % (Math.PI * 2)));
@@ -166,7 +238,11 @@ function spinWheel() {
       currentRotation = finalRotation % (Math.PI * 2);
       drawWheel(currentRotation);
 
-      resultText.textContent = `${selectedIndex + 1} - ${gifts[selectedIndex]} 🎁`;
+      resultText.textContent = gifts[selectedIndex];
+      resultCard.classList.remove("hidden");
+      resultCard.classList.add("visible");
+      launchConfetti();
+
       isSpinning = false;
       spinBtn.disabled = false;
     }
@@ -183,5 +259,4 @@ function normalizeAngle(angle) {
 
 spinBtn.addEventListener("click", spinWheel);
 
-renderGiftList();
 drawWheel();
