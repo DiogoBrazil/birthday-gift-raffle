@@ -246,9 +246,16 @@ function spinWheel() {
 
       // Detecta qual segmento parou sob o ponteiro
       const selectedIndex = getSegmentAtPointer(currentRotation);
+      const gift = gifts[selectedIndex];
+
+      // Se já foi sorteado, gira de novo sem gastar tentativa
+      if (drawnGifts.includes(gift)) {
+        isSpinning = false;
+        spinWheel();
+        return;
+      }
 
       spinsUsed++;
-      const gift = gifts[selectedIndex];
       drawnGifts.push(gift);
       addDrawnGift(gift, spinsUsed);
       launchConfetti();
